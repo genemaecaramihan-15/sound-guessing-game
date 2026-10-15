@@ -9,7 +9,7 @@
   'use strict';
 
   // =========================================================
-  // 1. SOUND DATABASE (20 Sounds across 5 Categories)
+  // 1. SOUND DATABASE (70 level sounds plus feedback sounds)
   // =========================================================
   const SOUND_LIBRARY = [
     // 🐶 Animals
@@ -200,14 +200,76 @@
       file: 'audio/water_pouring.wav',
       fact: 'When pouring water into a glass, you can tell it\'s almost full with your eyes closed! The pitch rises because the vibrating air cavity inside the container gets shorter.',
       clue: 'Liquid splashing and bubbling as it fills up a drinking glass.'
+    },
+    {
+      id: 'footsteps',
+      name: 'Footsteps Walking',
+      icon: '👣',
+      category: 'Everyday Sounds',
+      file: 'audio/footsteps.wav',
+      fact: 'The changing rhythm and weight of footsteps can reveal whether someone is walking, running, or approaching.',
+      clue: 'A person walking across a hard floor.'
+    },
+    {
+      id: 'keys_jingling',
+      name: 'Keys Jingling',
+      icon: '🔑',
+      category: 'Everyday Sounds',
+      file: 'audio/keys_jingling.wav',
+      fact: 'A key ring makes a bright rattle as its metal keys collide at many different pitches.',
+      clue: 'A small metal ring being shaken.'
+    },
+    {
+      id: 'glass_clink',
+      name: 'Glass Clinking',
+      icon: '🥂',
+      category: 'Everyday Sounds',
+      file: 'audio/glass_clink.wav',
+      fact: 'Glass rings because it vibrates at bright resonant frequencies after being tapped.',
+      clue: 'A light, high-pitched tap on a drinking glass.'
+    },
+    {
+      id: 'clock_ticking',
+      name: 'Clock Ticking',
+      icon: '🕰️',
+      category: 'Everyday Sounds',
+      file: 'audio/clock_ticking.wav',
+      fact: 'A mechanical clock uses a steady escapement to divide time into regular ticks.',
+      clue: 'A steady, repeating sound from a timekeeping device.'
+    },
+    {
+      id: 'zipper',
+      name: 'Zipper Closing',
+      icon: '🧥',
+      category: 'Everyday Sounds',
+      file: 'audio/zipper.wav',
+      fact: 'A zipper closes by interlocking two rows of small teeth as the slider moves along them.',
+      clue: 'A short rasping sound as a jacket or bag is fastened.'
     }
   ];
+
+  SOUND_LIBRARY.push(...window.EXTRA_GAME_SOUNDS);
+
+  // Each progression level draws questions and answer choices only from its own pool.
+  const LEVEL_SOUND_IDS = {
+    easy: ['dog_bark', 'cat_meow', 'bird_chirp', 'cow_moo', 'rain', 'thunder', 'doorbell', 'car_horn', 'alarm_clock', 'water_pouring'],
+    medium: ['motorcycle', 'train', 'telephone', 'wind', 'ocean_waves', 'flute', 'guitar', 'piano', 'drums', 'airplane', 'footsteps', 'keys_jingling', 'glass_clink', 'clock_ticking', 'zipper'],
+    hard: window.EXTRA_GAME_SOUNDS.slice(0, 20).map(sound => sound.id),
+    all: window.EXTRA_GAME_SOUNDS.slice(20).map(sound => sound.id)
+  };
+  const LEVEL_SOUNDS = Object.fromEntries(
+    Object.entries(LEVEL_SOUND_IDS).map(([level, ids]) => [
+      level,
+      ids.map(id => SOUND_LIBRARY.find(sound => sound.id === id)).filter(Boolean)
+    ])
+  );
 
   // =========================================================
   // 2. WEB AUDIO API PROCEDURAL SYNTHESIZER (ZERO-FAIL ENGINE)
   // Ensures 100% playable sound in every environment
   // =========================================================
   let audioCtx = null;
+  let activeMysterySynthMaster = null;
 
   function getAudioContext() {
     if (!audioCtx) {
@@ -224,13 +286,26 @@
 
   // Web Audio Synth Procedural Fallbacks
   const SynthEngine = {
-    play(id, volume = 0.8) {
+    stopMystery() {
+      if (!activeMysterySynthMaster || !audioCtx) return;
+      try {
+        activeMysterySynthMaster.gain.cancelScheduledValues(audioCtx.currentTime);
+        activeMysterySynthMaster.gain.setValueAtTime(0, audioCtx.currentTime);
+        activeMysterySynthMaster.disconnect();
+      } catch (_) {
+        // The sound may already have finished.
+      }
+      activeMysterySynthMaster = null;
+    },
+    play(id, volume = 0.8, track = 'effect') {
+      if (track === 'mystery') this.stopMystery();
       const ctx = getAudioContext();
       if (!ctx) return;
       const t = ctx.currentTime;
       const master = ctx.createGain();
       master.gain.setValueAtTime(volume, t);
       master.connect(ctx.destination);
+      if (track === 'mystery') activeMysterySynthMaster = master;
 
       switch (id) {
         case 'dog_bark': {
@@ -706,9 +781,9 @@
   // 3. GAME STATE & SETTINGS
   // =========================================================
   const state = {
-    currentScreen: 'home', // 'home' | 'game' | 'results'
+    currentScreen: 'welcome', // 'welcome' | 'home' | 'game' | 'results'
     selectedLevel: 'easy',  // 'easy' | 'medium' | 'hard' | 'all'
-    highestUnlockedLevel: Math.max(0, Math.min(2, parseInt(localStorage.getItem('guess_sound_unlocked_level') || '0', 10))),
+    highestUnlockedLevel: Math.max(0, Math.min(2, parseInt(localStorage.getItem('guess_sound_unlocked_level_v3') || '0', 10))),
     selectedCategory: 'all',// 'all' | 'animals' | 'vehicles' | 'music' | 'nature' | 'everyday'
     score: 0,
     streak: 0,
@@ -719,6 +794,7 @@
     currentChoices: [],
     hasListened: false,
     hasAnswered: false,
+    isRetryingQuestion: false,
     soundHistory: [], // records { sound, playerAnswer, isCorrect }
     startTime: 0,
     isMuted: false,
@@ -734,30 +810,29 @@
     easy: {
       name: 'Easy',
       badgeClass: 'badge-easy',
-      rounds: 6,
+      rounds: 10,
       desc: 'Iconic, distinct sounds with broad distractors.'
     },
     medium: {
       name: 'Hard',
       badgeClass: 'badge-medium',
-      rounds: 10,
+      rounds: 15,
       desc: 'Varied sounds with closer distractors across categories.'
     },
     hard: {
       name: 'Difficult',
       badgeClass: 'badge-hard',
-      rounds: 15,
+      rounds: 20,
       desc: 'Challenging sounds with close distractors within the same category.'
     },
     all: {
       name: 'Full Tour',
       badgeClass: 'badge-all',
-      rounds: 20,
-      desc: 'All 20 sounds in one championship marathon!'
+      rounds: 25,
+      desc: 'All 25 sounds in one championship marathon!'
     }
   };
   const PROGRESSION_LEVELS = ['easy', 'medium', 'hard'];
-  let levelTransitionTimer = null;
 
   // =========================================================
   // 4. DOM ELEMENTS
@@ -776,11 +851,13 @@
     floatingIcons: document.getElementById('floating-icons'),
 
     // Screens
+    welcomeScreen: document.getElementById('welcome-screen'),
     homeScreen: document.getElementById('home-screen'),
     gameScreen: document.getElementById('game-screen'),
     resultsScreen: document.getElementById('results-screen'),
 
     // Home elements
+    btnGetStarted: document.getElementById('btn-get-started'),
     levelCards: document.querySelectorAll('.level-card'),
     btnStartGame: document.getElementById('btn-start-game'),
 
@@ -824,6 +901,7 @@
     resultsTitle: document.getElementById('results-title'),
     resultsMessage: document.getElementById('results-message'),
     resultsScore: document.getElementById('results-score'),
+    resultsGoldenCard: document.getElementById('results-golden-card'),
     resultsMaxScore: document.getElementById('results-max-score'),
     resultsAccuracy: document.getElementById('results-accuracy'),
     resultsCorrectCount: document.getElementById('results-correct-count'),
@@ -835,6 +913,7 @@
     reviewChevron: document.getElementById('review-chevron'),
     reviewList: document.getElementById('review-list'),
     btnPlayAgain: document.getElementById('btn-play-again'),
+    btnContinueNext: document.getElementById('btn-continue-next'),
     btnReturnHome: document.getElementById('btn-return-home'),
 
     // Audio Elements
@@ -845,6 +924,18 @@
   // =========================================================
   // 5. AUDIO PLAYBACK & VISUALIZER
   // =========================================================
+  let mysteryPlaybackId = 0;
+  let fallbackPlaybackId = 0;
+
+  function playMysteryFallback(playbackId, sound, error) {
+    if (playbackId !== mysteryPlaybackId || fallbackPlaybackId === playbackId) return;
+    fallbackPlaybackId = playbackId;
+    console.warn(`Falling back to synthesized audio for ${sound.file}.`, error || 'Audio file failed to load.');
+    state.hasListened = true;
+    setAudioPlayingState(false);
+    DOM.soundStateNotice.textContent = 'Playing a synthesized version of this sound.';
+    SynthEngine.play(sound.id, state.isMuted ? 0 : state.volume, 'mystery');
+  }
 
   function playSFX(sfxName) {
     if (state.isMuted) return;
@@ -859,12 +950,22 @@
 
   function playMysterySound() {
     if (!state.currentSound) return;
-    getAudioContext(); // Ensure AudioContext unlocked
+    SynthEngine.stopMystery();
+    const playbackId = ++mysteryPlaybackId;
     state.hasListened = true;
     setAudioPlayingState(true);
 
     const sound = state.currentSound;
-    DOM.audioPlayer.src = sound.file;
+    DOM.audioPlayer.pause();
+    try {
+      DOM.audioPlayer.currentTime = 0;
+    } catch (_) {
+      // A source has not loaded yet.
+    }
+    DOM.audioPlayer.preload = 'auto';
+    DOM.audioPlayer.playsInline = true;
+    DOM.audioPlayer.dataset.playbackId = String(playbackId);
+    DOM.audioPlayer.src = new URL(sound.file, document.baseURI).href;
     DOM.audioPlayer.volume = state.isMuted ? 0 : state.volume;
 
     const playPromise = DOM.audioPlayer.play();
@@ -874,15 +975,8 @@
           DOM.soundStateNotice.innerHTML = `🎧 <em>Listening to the mystery sound...</em>`;
         })
         .catch(err => {
-          console.warn('HTML5 Audio play rejected or file missing, using synthesizer fallback:', err);
-          // Play via Web Audio Synth
-          if (!state.isMuted) {
-            SynthEngine.play(sound.id, state.volume);
-          }
-          // Simulate playback duration for UI
-          setTimeout(() => {
-            setAudioPlayingState(false);
-          }, 2400);
+          if (playbackId !== mysteryPlaybackId) return;
+          playMysteryFallback(playbackId, sound, err);
         });
     }
   }
@@ -908,8 +1002,9 @@
   });
 
   DOM.audioPlayer.addEventListener('error', () => {
-    console.warn('Audio Player error event triggered, switching to synth.');
-    setAudioPlayingState(false);
+    if (Number(DOM.audioPlayer.dataset.playbackId) !== mysteryPlaybackId) return;
+    const failedFile = state.currentSound ? state.currentSound.file : 'unknown sound';
+    playMysteryFallback(Number(DOM.audioPlayer.dataset.playbackId), state.currentSound, `Audio file failed to load: ${failedFile}`);
   });
 
   // Animated Visualizer on Canvas
@@ -966,9 +1061,10 @@
   // =========================================================
 
   function generateQuestionChoices(correctSound, level) {
+    const levelSounds = LEVEL_SOUNDS[level] || LEVEL_SOUNDS.easy;
     const choices = [correctSound];
-    const categorySounds = SOUND_LIBRARY.filter(s => s.category === correctSound.category && s.id !== correctSound.id);
-    const otherSounds = SOUND_LIBRARY.filter(s => s.category !== correctSound.category);
+    const categorySounds = levelSounds.filter(s => s.category === correctSound.category && s.id !== correctSound.id);
+    const otherSounds = levelSounds.filter(s => s.category !== correctSound.category && s.id !== correctSound.id);
 
     let candidates = [];
 
@@ -985,8 +1081,8 @@
       if (same.length > 0) candidates.push(same[0]);
       candidates.push(...diff);
     } else {
-      // Easy: Distractors from completely different categories to be distinct & clear
-      candidates = shuffle([...otherSounds]);
+      // Easy: use familiar, distinct choices while staying inside the Easy pool.
+      candidates = shuffle(levelSounds.filter(s => s.id !== correctSound.id));
     }
 
     // Ensure 3 unique distractors
@@ -999,6 +1095,12 @@
     }
 
     choices.push(...chosenDistractors);
+    if (choices.length < 4) {
+      for (const candidate of shuffle(levelSounds.filter(sound => sound.id !== correctSound.id && !choices.some(choice => choice.id === sound.id)))) {
+        choices.push(candidate);
+        if (choices.length === 4) break;
+      }
+    }
     return shuffle(choices);
   }
 
@@ -1016,16 +1118,13 @@
   // =========================================================
 
   function startGame() {
-    if (levelTransitionTimer) {
-      clearTimeout(levelTransitionTimer);
-      levelTransitionTimer = null;
-    }
+    if (state.selectedLevel === 'all' && state.highestUnlockedLevel < PROGRESSION_LEVELS.length - 1) return;
     playSFX('click');
     const levelKey = state.selectedLevel;
     const config = LEVEL_CONFIG[levelKey] || LEVEL_CONFIG.easy;
 
-    // Use the complete sound library for every level.
-    const pool = [...SOUND_LIBRARY];
+    // Build this run only from the selected level's sound pool.
+    const pool = [...(LEVEL_SOUNDS[levelKey] || LEVEL_SOUNDS.easy)];
 
     // Prepare randomized question queue
     const shuffledPool = shuffle(pool);
@@ -1037,6 +1136,9 @@
       clearTimeout(state.gameOverTimer);
       state.gameOverTimer = null;
     }
+    mysteryPlaybackId += 1;
+    SynthEngine.stopMystery();
+    DOM.audioPlayer.dataset.playbackId = String(mysteryPlaybackId);
     state.isGameOver = false;
     state.currentIndex = 0;
     state.score = 0;
@@ -1066,6 +1168,9 @@
       clearTimeout(state.gameOverTimer);
       state.gameOverTimer = null;
     }
+    mysteryPlaybackId += 1;
+    SynthEngine.stopMystery();
+    DOM.audioPlayer.dataset.playbackId = String(mysteryPlaybackId);
     state.isGameOver = false;
 
     // Reset Next button state
@@ -1073,6 +1178,7 @@
     DOM.btnNextSound.innerHTML = `<span>Next Sound</span> <span class="btn-arrow">➡️</span>`;
 
     state.currentIndex = index;
+    state.isRetryingQuestion = false;
     state.currentSound = state.roundSounds[index];
     state.hasAnswered = false;
     state.hasListened = false;
@@ -1121,20 +1227,9 @@
     if (state.hasAnswered || !state.currentSound) return;
     state.hasAnswered = true;
 
-    // Stop current audio playback
-    DOM.audioPlayer.pause();
-    setAudioPlayingState(false);
-
     const chosenSound = state.currentChoices[chosenIndex];
     const isCorrect = chosenSound.id === state.currentSound.id;
     const chosenBtn = DOM.answerBtns[chosenIndex];
-
-    // Record for end game review
-    state.soundHistory.push({
-      sound: state.currentSound,
-      playerAnswer: chosenSound,
-      isCorrect: isCorrect
-    });
 
     // Update all buttons
     DOM.answerBtns.forEach((btn, idx) => {
@@ -1146,6 +1241,7 @@
     });
 
     if (isCorrect) {
+      state.soundHistory.push({ sound: state.currentSound, playerAnswer: chosenSound, isCorrect: true });
       chosenBtn.classList.add('correct');
       state.score += 10;
       state.streak += 1;
@@ -1166,24 +1262,21 @@
       chosenBtn.classList.add('incorrect');
       state.streak = 0;
       state.isGameOver = true;
+      state.isRetryingQuestion = false;
+      state.soundHistory.push({ sound: state.currentSound, playerAnswer: chosenSound, isCorrect: false });
       playSFX('incorrect');
 
       DOM.feedbackBanner.className = 'feedback-banner wrong game-over';
       DOM.feedbackIcon.textContent = '💀';
-      DOM.feedbackTitle.textContent = 'Game Over!';
-      DOM.feedbackDetail.textContent = `Incorrect! That was actually ${state.currentSound.icon} ${state.currentSound.name}. Your game has ended!`;
+      DOM.feedbackTitle.textContent = 'Not Quite — Try Again';
+      DOM.feedbackDetail.textContent = `That was ${state.currentSound.icon} ${state.currentSound.name}. Listen again and retry this question.`;
 
       // Next button transforms into Game Over button
       DOM.btnNextSound.className = 'cta-btn primary-btn pulse-next game-over-btn';
       DOM.btnNextSound.innerHTML = `<span>💀 Game Over (View Results)</span> <span class="btn-arrow">📊</span>`;
 
-      // Auto-redirect to Game Over results after 3.5 seconds if player doesn't click
-      if (state.gameOverTimer) clearTimeout(state.gameOverTimer);
-      state.gameOverTimer = setTimeout(() => {
-        if (state.isGameOver && state.currentScreen === 'game') {
-          finishGame(true);
-        }
-      }, 3500);
+      // Results are shown after the feedback panel is revealed below.
+      // Keep the game-over state and results action set above.
     }
 
     // Display Educational Fun Fact
@@ -1192,12 +1285,17 @@
 
     // Update Score & HUD
     updateScoreUI();
-    const percent = Math.round(((state.currentIndex + 1) / state.roundSounds.length) * 100);
+    const completedCount = state.currentIndex + (isCorrect ? 1 : 0);
+    const percent = Math.round((completedCount / state.roundSounds.length) * 100);
     DOM.hudProgressPercent.textContent = `${percent}%`;
     DOM.hudProgressFill.style.width = `${percent}%`;
 
     // Reveal Feedback Banner
     DOM.feedbackPanel.classList.remove('hidden');
+    if (!isCorrect) {
+      // Briefly show the missed answer before opening the Game Over results screen.
+      state.gameOverTimer = setTimeout(() => finishGame(true), 900);
+    }
     DOM.btnNextSound.focus();
   }
 
@@ -1205,6 +1303,12 @@
     if (state.gameOverTimer) {
       clearTimeout(state.gameOverTimer);
       state.gameOverTimer = null;
+    }
+
+    if (state.isRetryingQuestion) {
+      playSFX('click');
+      loadQuestion(state.currentIndex);
+      return;
     }
 
     if (state.isGameOver) {
@@ -1237,6 +1341,8 @@
       clearTimeout(state.gameOverTimer);
       state.gameOverTimer = null;
     }
+    DOM.btnContinueNext.classList.add('hidden');
+    DOM.resultsGoldenCard.classList.toggle('hidden', isGameOver);
 
     const totalQuestions = state.roundSounds.length;
     const maxScore = totalQuestions * 10;
@@ -1309,23 +1415,29 @@
       if (passedLevel) {
         if (progressionIndex < PROGRESSION_LEVELS.length - 1) {
           state.highestUnlockedLevel = Math.max(state.highestUnlockedLevel, progressionIndex + 1);
-          localStorage.setItem('guess_sound_unlocked_level', String(state.highestUnlockedLevel));
+          localStorage.setItem('guess_sound_unlocked_level_v3', String(state.highestUnlockedLevel));
           updateLevelCards();
           const nextLevel = PROGRESSION_LEVELS[progressionIndex + 1];
           title = `${LEVEL_CONFIG[state.selectedLevel].name} Level Passed!`;
-          message = `Level complete! ${LEVEL_CONFIG[nextLevel].name} Level unlocked. Moving you there now…`;
-          DOM.btnPlayAgain.innerHTML = `<span>Continue to ${LEVEL_CONFIG[nextLevel].name}</span>`;
-          levelTransitionTimer = setTimeout(() => {
-            if (state.currentScreen !== 'results' || state.isGameOver) return;
-            state.selectedLevel = nextLevel;
-            startGame();
-          }, 2200);
+          message = `Level complete! ${LEVEL_CONFIG[nextLevel].name} Level is unlocked. Replay this level or continue when you are ready.`;
+          DOM.btnPlayAgain.innerHTML = `<span>Replay ${LEVEL_CONFIG[state.selectedLevel].name}</span>`;
+          DOM.btnContinueNext.innerHTML = `<span>Continue to ${LEVEL_CONFIG[nextLevel].name}</span>`;
+          DOM.btnContinueNext.classList.remove('hidden');
         } else if (isFinalLevel) {
           title = 'Congratulations! You Completed All Levels!';
           message = 'You passed Easy, Hard, and Difficult. Incredible listening!';
+          DOM.btnPlayAgain.innerHTML = '<span>Replay Difficult</span>';
+          DOM.btnContinueNext.innerHTML = '<span>Restart from Easy</span>';
+          DOM.btnContinueNext.classList.remove('hidden');
           DOM.btnPlayAgain.innerHTML = '<span>🔄 Restart from Easy</span>';
         }
       }
+    }
+
+    if (!isGameOver && isFinalLevel) {
+      DOM.btnPlayAgain.innerHTML = '<span>Replay Difficult</span>';
+      DOM.btnContinueNext.innerHTML = '<span>Restart from Easy</span>';
+      DOM.btnContinueNext.classList.remove('hidden');
     }
 
     DOM.resultsTrophy.textContent = trophy;
@@ -1446,11 +1558,15 @@
 
   function switchScreen(screenName) {
     state.currentScreen = screenName;
+    DOM.welcomeScreen.classList.remove('active');
     DOM.homeScreen.classList.remove('active');
     DOM.gameScreen.classList.remove('active');
     DOM.resultsScreen.classList.remove('active');
 
-    if (screenName === 'home') {
+    if (screenName === 'welcome') {
+      DOM.welcomeScreen.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (screenName === 'home') {
       DOM.homeScreen.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (screenName === 'game') {
@@ -1504,6 +1620,11 @@
   // =========================================================
 
   // Start Game Button
+  DOM.btnGetStarted.addEventListener('click', () => {
+    playSFX('click');
+    switchScreen('home');
+  });
+
   DOM.btnStartGame.addEventListener('click', startGame);
 
   // Return to Home / Logo Click
@@ -1519,24 +1640,28 @@
     switchScreen('home');
   });
 
-  // Play Again Button
-  DOM.btnPlayAgain.addEventListener('click', () => {
-    if (levelTransitionTimer) {
-      clearTimeout(levelTransitionTimer);
-      levelTransitionTimer = null;
-      const currentIndex = PROGRESSION_LEVELS.indexOf(state.selectedLevel);
-      if (currentIndex >= 0 && currentIndex < PROGRESSION_LEVELS.length - 1 && !state.isGameOver) {
-        state.selectedLevel = PROGRESSION_LEVELS[currentIndex + 1];
-        startGame();
-        return;
-      }
-    }
-    if (PROGRESSION_LEVELS.indexOf(state.selectedLevel) === PROGRESSION_LEVELS.length - 1 && !state.isGameOver) {
+  DOM.btnContinueNext.addEventListener('click', () => {
+    const currentIndex = PROGRESSION_LEVELS.indexOf(state.selectedLevel);
+    if (currentIndex === PROGRESSION_LEVELS.length - 1) {
       state.selectedLevel = 'easy';
       state.highestUnlockedLevel = 0;
-      localStorage.setItem('guess_sound_unlocked_level', '0');
+      localStorage.setItem('guess_sound_unlocked_level_v3', '0');
       updateLevelCards();
       DOM.levelCards.forEach(card => card.classList.toggle('active', card.dataset.level === 'easy'));
+      startGame();
+      return;
+    }
+    if (currentIndex < 0 || currentIndex >= PROGRESSION_LEVELS.length - 1) return;
+    state.selectedLevel = PROGRESSION_LEVELS[currentIndex + 1];
+    DOM.levelCards.forEach(card => card.classList.toggle('active', card.dataset.level === state.selectedLevel));
+    startGame();
+  });
+
+  // Play Again Button
+  DOM.btnPlayAgain.addEventListener('click', () => {
+    if (PROGRESSION_LEVELS.indexOf(state.selectedLevel) === PROGRESSION_LEVELS.length - 1 && !state.isGameOver) {
+      startGame();
+      return;
     }
     startGame();
   });
@@ -1545,7 +1670,9 @@
   DOM.levelCards.forEach(card => {
     card.addEventListener('click', () => {
       const levelIndex = PROGRESSION_LEVELS.indexOf(card.dataset.level);
-      if (levelIndex < 0 || levelIndex > state.highestUnlockedLevel) return;
+      const isFullTour = card.dataset.level === 'all';
+      const fullTourUnlocked = state.highestUnlockedLevel >= PROGRESSION_LEVELS.length - 1;
+      if (isFullTour ? !fullTourUnlocked : (levelIndex < 0 || levelIndex > state.highestUnlockedLevel)) return;
       playSFX('click');
       DOM.levelCards.forEach(c => c.classList.remove('active'));
       card.classList.add('active');
@@ -1556,11 +1683,14 @@
   function updateLevelCards() {
     DOM.levelCards.forEach(card => {
       const levelIndex = PROGRESSION_LEVELS.indexOf(card.dataset.level);
-      const locked = levelIndex < 0 || levelIndex > state.highestUnlockedLevel;
+      const isFullTour = card.dataset.level === 'all';
+      const fullTourUnlocked = state.highestUnlockedLevel >= PROGRESSION_LEVELS.length - 1;
+      const locked = isFullTour ? !fullTourUnlocked : (levelIndex < 0 || levelIndex > state.highestUnlockedLevel);
       card.disabled = locked;
       card.classList.toggle('locked', locked);
       card.setAttribute('aria-disabled', String(locked));
       const rounds = card.querySelector('.level-rounds');
+      if (rounds && !rounds.dataset.unlockedLabel) rounds.dataset.unlockedLabel = rounds.textContent.trim();
       if (rounds && locked) rounds.textContent = '🔒 Locked';
     });
   }

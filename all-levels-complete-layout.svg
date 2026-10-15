@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1050" viewBox="0 0 960 1050">
+  <defs>
+    <linearGradient id="accent" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#6965ff"/><stop offset=".55" stop-color="#a547f4"/><stop offset="1" stop-color="#ed3f9f"/></linearGradient>
+    <linearGradient id="gold" x1="0" x2="1"><stop stop-color="#393127"/><stop offset="1" stop-color="#51432d"/></linearGradient>
+  </defs>
+  <rect width="960" height="1050" fill="#101426"/>
+  <rect x="24" y="20" width="912" height="1010" rx="26" fill="#1a2038" stroke="#343b56" stroke-width="2"/>
+  <text x="480" y="91" text-anchor="middle" font-family="Arial,sans-serif" font-size="52" fill="#ffd166">🏆</text>
+  <rect x="352" y="110" width="256" height="38" rx="19" fill="#292d42" stroke="#55516d"/>
+  <text x="480" y="135" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="1" fill="#f6cf70">ALL LEVELS COMPLETE</text>
+  <text x="480" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="39" font-weight="800" fill="#f8fafc">Congratulations!</text>
+  <text x="480" y="235" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#9aa8bd">You completed every difficulty level.</text>
+  <rect x="337" y="264" width="286" height="112" rx="18" fill="#111629" stroke="#343b56"/>
+  <text x="480" y="302" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="1.5" fill="#98a6bb">FINAL SCORE</text>
+  <text x="480" y="355" text-anchor="middle" font-family="Arial,sans-serif" font-size="45" font-weight="800" fill="#f5a623">270 <tspan font-size="23" fill="#73829a">/ 300</tspan></text>
+  <rect x="72" y="402" width="816" height="132" rx="18" fill="url(#gold)" stroke="#f6b900" stroke-width="2"/>
+  <text x="480" y="447" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="800" fill="#ffe479">Golden Ear Champion!</text>
+  <text x="480" y="481" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#f3e5c4">You conquered the Golden Sound Challenge</text>
+  <text x="480" y="506" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#f3e5c4">and earned the exclusive Golden Ear Badge!</text>
+  <g font-family="Arial,sans-serif" text-anchor="middle">
+    <g><rect x="72" y="560" width="192" height="136" rx="16" fill="#222a40" stroke="#3b435e"/><text x="168" y="602" font-size="26">🎯</text><text x="168" y="641" font-size="26" font-weight="800" fill="#f8fafc">90%</text><text x="168" y="671" font-size="13" font-weight="700" fill="#94a3b8">ACCURACY</text></g>
+    <g><rect x="276" y="560" width="192" height="136" rx="16" fill="#222a40" stroke="#3b435e"/><text x="372" y="602" font-size="26">✅</text><text x="372" y="641" font-size="26" font-weight="800" fill="#f8fafc">27/30</text><text x="372" y="671" font-size="13" font-weight="700" fill="#94a3b8">CORRECT</text></g>
+    <g><rect x="492" y="560" width="192" height="136" rx="16" fill="#222a40" stroke="#3b435e"/><text x="588" y="602" font-size="26">🔥</text><text x="588" y="641" font-size="26" font-weight="800" fill="#f8fafc">12</text><text x="588" y="671" font-size="13" font-weight="700" fill="#94a3b8">BEST STREAK</text></g>
+    <g><rect x="696" y="560" width="192" height="136" rx="16" fill="#222a40" stroke="#3b435e"/><text x="792" y="602" font-size="26">⏱</text><text x="792" y="641" font-size="24" font-weight="800" fill="#f8fafc">18m 24s</text><text x="792" y="671" font-size="13" font-weight="700" fill="#94a3b8">TIME</text></g>
+  </g>
+  <rect x="72" y="724" width="816" height="60" rx="15" fill="#252d43" stroke="#3b435e"/>
+  <text x="105" y="761" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#edf1fa">🎧  Review Sounds You Listened To (30)</text><text x="850" y="761" font-family="Arial,sans-serif" font-size="22" fill="#cbd5e1">⌄</text>
+  <rect x="72" y="810" width="256" height="64" rx="17" fill="url(#accent)"/><text x="200" y="850" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="800" fill="white">↻  Replay Difficult</text>
+  <rect x="352" y="810" width="256" height="64" rx="17" fill="url(#accent)"/><text x="480" y="850" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="800" fill="white">⟲  Restart from Easy</text>
+  <rect x="632" y="810" width="256" height="64" rx="17" fill="#2a3148" stroke="#46506b"/><text x="760" y="850" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="800" fill="#f0f3fa">⌂  Main Menu</text>
+  <text x="480" y="930" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#718099">Mockup sample: score, statistics, and time are illustrative.</text>
+</svg>

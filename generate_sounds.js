@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const EXTRA_GAME_SOUNDS = require('./extra_sounds.js');
 
 const SAMPLE_RATE = 44100;
 const audioDir = path.join(__dirname, 'audio');
@@ -919,6 +920,162 @@ function generateWaterPouring() {
 // -------------------------------------------------------------
 
 // Correct Answer: Joyful celebratory chime arpeggio (C5 - E5 - G5 - C6)
+// Additional hard-level cues. These are synthesized effects, not field recordings.
+function generateFootsteps() {
+  const len = Math.floor(SAMPLE_RATE * 2.8);
+  const out = new Float32Array(len);
+  const grit = applyBiquad(noise(len), 'lowpass', 1300, 0.8);
+  [0.2, 0.62, 1.04, 1.46, 1.88, 2.3].forEach((start, step) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.2 * SAMPLE_RATE);
+    let phase = 0;
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const env = Math.exp(-t * 20);
+      phase += 2 * Math.PI * (step % 2 ? 72 : 92) / SAMPLE_RATE;
+      out[offset + j] += (Math.sin(phase) * 0.7 + grit[offset + j] * 0.7) * env;
+    }
+  });
+  return out;
+}
+
+function generateKeysJingling() {
+  const len = Math.floor(SAMPLE_RATE * 2.4);
+  const out = new Float32Array(len);
+  [0.18, 0.3, 0.48, 0.76, 0.9, 1.15, 1.44, 1.62, 1.94, 2.12].forEach((start, index) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.28 * SAMPLE_RATE);
+    const freqs = [1180 + index * 29, 1930 + index * 17, 2870 - index * 21];
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const ring = Math.exp(-t * (13 + (index % 3) * 3));
+      out[offset + j] += freqs.reduce((sum, f, k) => sum + Math.sin(2 * Math.PI * f * t) * (0.45 / (k + 1)), 0) * ring;
+    }
+  });
+  return out;
+}
+
+function generateGlassClink() {
+  const len = Math.floor(SAMPLE_RATE * 2.2);
+  const out = new Float32Array(len);
+  const offset = Math.floor(0.18 * SAMPLE_RATE);
+  for (let j = 0; j < len - offset; j++) {
+    const t = j / SAMPLE_RATE;
+    const ring = Math.exp(-t * 2.7) * Math.min(1, t / 0.006);
+    out[offset + j] = (Math.sin(2 * Math.PI * 1040 * t) + 0.62 * Math.sin(2 * Math.PI * 1675 * t) + 0.3 * Math.sin(2 * Math.PI * 2780 * t)) * ring;
+  }
+  return out;
+}
+
+function generateClockTicking() {
+  const len = Math.floor(SAMPLE_RATE * 2.6);
+  const out = new Float32Array(len);
+  const tickNoise = noise(len);
+  [0.18, 0.68, 1.18, 1.68, 2.18].forEach((start, index) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.055 * SAMPLE_RATE);
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const env = Math.exp(-t * 90);
+      const body = Math.sin(2 * Math.PI * (index % 2 ? 1450 : 1900) * t);
+      out[offset + j] += (body * 0.7 + tickNoise[offset + j] * 0.3) * env;
+    }
+  });
+  return out;
+}
+
+function generateZipper() {
+  const len = Math.floor(SAMPLE_RATE * 2.0);
+  const rasp = applyBiquad(noise(len), 'bandpass', 2600, 0.7);
+  const out = new Float32Array(len);
+  for (let i = 0; i < len; i++) {
+    const position = (i / SAMPLE_RATE - 0.25) / 1.2;
+    if (position < 0 || position > 1) continue;
+    const pulse = 0.72 + 0.28 * Math.sin(position * Math.PI * 44);
+    const fade = Math.min(1, position * 12, (1 - position) * 12);
+    out[i] = rasp[i] * pulse * fade * 1.5;
+  }
+  return out;
+}
+
+// Additional hard-level cues. These are synthesized effects, not field recordings.
+function generateFootsteps() {
+  const len = Math.floor(SAMPLE_RATE * 2.8);
+  const out = new Float32Array(len);
+  const grit = applyBiquad(noise(len), 'lowpass', 1300, 0.8);
+  [0.2, 0.62, 1.04, 1.46, 1.88, 2.3].forEach((start, step) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.2 * SAMPLE_RATE);
+    let phase = 0;
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const env = Math.exp(-t * 20);
+      phase += 2 * Math.PI * (step % 2 ? 72 : 92) / SAMPLE_RATE;
+      out[offset + j] += (Math.sin(phase) * 0.7 + grit[offset + j] * 0.7) * env;
+    }
+  });
+  return out;
+}
+
+function generateKeysJingling() {
+  const len = Math.floor(SAMPLE_RATE * 2.4);
+  const out = new Float32Array(len);
+  [0.18, 0.3, 0.48, 0.76, 0.9, 1.15, 1.44, 1.62, 1.94, 2.12].forEach((start, index) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.28 * SAMPLE_RATE);
+    const freqs = [1180 + index * 29, 1930 + index * 17, 2870 - index * 21];
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const ring = Math.exp(-t * (13 + (index % 3) * 3));
+      out[offset + j] += freqs.reduce((sum, f, k) => sum + Math.sin(2 * Math.PI * f * t) * (0.45 / (k + 1)), 0) * ring;
+    }
+  });
+  return out;
+}
+
+function generateGlassClink() {
+  const len = Math.floor(SAMPLE_RATE * 2.2);
+  const out = new Float32Array(len);
+  const offset = Math.floor(0.18 * SAMPLE_RATE);
+  for (let j = 0; j < len - offset; j++) {
+    const t = j / SAMPLE_RATE;
+    const ring = Math.exp(-t * 2.7) * Math.min(1, t / 0.006);
+    out[offset + j] = (Math.sin(2 * Math.PI * 1040 * t) + 0.62 * Math.sin(2 * Math.PI * 1675 * t) + 0.3 * Math.sin(2 * Math.PI * 2780 * t)) * ring;
+  }
+  return out;
+}
+
+function generateClockTicking() {
+  const len = Math.floor(SAMPLE_RATE * 2.6);
+  const out = new Float32Array(len);
+  const tickNoise = noise(len);
+  [0.18, 0.68, 1.18, 1.68, 2.18].forEach((start, index) => {
+    const offset = Math.floor(start * SAMPLE_RATE);
+    const count = Math.floor(0.055 * SAMPLE_RATE);
+    for (let j = 0; j < count && offset + j < len; j++) {
+      const t = j / SAMPLE_RATE;
+      const env = Math.exp(-t * 90);
+      const body = Math.sin(2 * Math.PI * (index % 2 ? 1450 : 1900) * t);
+      out[offset + j] += (body * 0.7 + tickNoise[offset + j] * 0.3) * env;
+    }
+  });
+  return out;
+}
+
+function generateZipper() {
+  const len = Math.floor(SAMPLE_RATE * 2.0);
+  const rasp = applyBiquad(noise(len), 'bandpass', 2600, 0.7);
+  const out = new Float32Array(len);
+  for (let i = 0; i < len; i++) {
+    const position = (i / SAMPLE_RATE - 0.25) / 1.2;
+    if (position < 0 || position > 1) continue;
+    const pulse = 0.72 + 0.28 * Math.sin(position * Math.PI * 44);
+    const fade = Math.min(1, position * 12, (1 - position) * 12);
+    out[i] = rasp[i] * pulse * fade * 1.5;
+  }
+  return out;
+}
+
 function generateCorrect() {
   const dur = 1.2;
   const len = Math.floor(SAMPLE_RATE * dur);
@@ -1081,8 +1238,50 @@ function generateShield() {
 // EXECUTE GENERATION
 // -------------------------------------------------------------
 
+function generateLevelExclusiveSound(sound, seed) {
+  const duration = 1.45 + (seed % 4) * 0.16;
+  const length = Math.floor(SAMPLE_RATE * duration);
+  const samples = new Float32Array(length);
+  const phaseOffset = seed * 0.731;
+  const pulseRate = 2.2 + (seed % 7) * 1.13;
+  const sweepPower = 0.65 + (seed % 5) * 0.22;
+
+  for (let i = 0; i < length; i++) {
+    const t = i / SAMPLE_RATE;
+    const progress = t / duration;
+    const sweep = Math.pow(progress, sweepPower);
+    const frequency = sound.lowFrequency + (sound.highFrequency - sound.lowFrequency) * sweep;
+    const phase = 2 * Math.PI * (sound.lowFrequency * t + (sound.highFrequency - sound.lowFrequency) * Math.pow(t, sweepPower + 1) / ((sweepPower + 1) * duration ** sweepPower));
+    const pulse = 0.52 + 0.48 * Math.sin(2 * Math.PI * pulseRate * t + phaseOffset);
+    const attack = Math.min(1, t * (sound.style === 1 ? 45 : 8));
+    const release = Math.min(1, Math.max(0, (duration - t) * (sound.style === 1 ? 2.1 : 3.4)));
+    const envelope = attack * release;
+    const tone = Math.sin(phase) + 0.34 * Math.sin(phase * (1.48 + (seed % 4) * 0.18) + phaseOffset);
+    const harmonic = Math.sin(phase * 2.01 + phaseOffset) * (sound.style === 4 ? 0.18 : 0.32);
+    const noise = (Math.random() * 2 - 1) * (sound.style === 2 || sound.style === 5 ? 0.3 : 0.055);
+    const transient = Math.sin(2 * Math.PI * (frequency * 1.8) * t) * Math.exp(-t * (3 + seed % 4)) * (sound.style === 1 ? 0.55 : 0.12);
+    const texture = sound.style === 3 ? pulse : sound.style === 5 ? Math.abs(pulse) : 0.72 + 0.28 * pulse;
+    samples[i] = (tone + harmonic + noise + transient) * envelope * texture;
+  }
+
+  return applyBiquad(samples, sound.style === 2 || sound.style === 5 ? 'bandpass' : 'lowpass', Math.min(6000, sound.highFrequency * 2.2), 0.8 + (seed % 3) * 0.25);
+}
+
 console.log('Generating game audio assets...');
 
+if (process.argv.includes('--level-exclusive-assets')) {
+  EXTRA_GAME_SOUNDS.forEach((sound, index) => {
+    writeWav(`${sound.id}.wav`, generateLevelExclusiveSound(sound, index + 1));
+  });
+  console.log(`Generated ${EXTRA_GAME_SOUNDS.length} level-exclusive sound assets.`);
+} else if (process.argv.includes('--new-hard-assets')) {
+  writeWav('footsteps.wav', generateFootsteps());
+  writeWav('keys_jingling.wav', generateKeysJingling());
+  writeWav('glass_clink.wav', generateGlassClink());
+  writeWav('clock_ticking.wav', generateClockTicking());
+  writeWav('zipper.wav', generateZipper());
+  console.log('Generated five additional hard-level sound assets.');
+} else {
 // 20 Game Sounds
 writeWav('dog_bark.wav', generateDog());
 writeWav('cat_meow.wav', generateCat());
@@ -1117,5 +1316,6 @@ writeWav('fanfare.wav', generateFanfare());
 writeWav('golden.wav', generateGolden());
 writeWav('shield.wav', generateShield());
 
-console.log('All 26 audio files successfully generated in /audio directory!');
+console.log('All audio files successfully generated in /audio directory!');
+}
 

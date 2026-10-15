@@ -51,10 +51,22 @@
   <!-- Main Game Container -->
   <main class="game-wrapper">
 
+    <section id="welcome-screen" class="view-screen active" aria-labelledby="welcome-title">
+      <div class="welcome-card">
+        <div class="hero-badge">Interactive Audio Trivia</div>
+        <h2 id="welcome-title" class="welcome-title">Guess the Sound</h2>
+        <p class="welcome-subtitle">Ready to test your listening skills?</p>
+        <button id="btn-get-started" class="cta-btn primary-btn large-btn" type="button">
+          <span class="btn-shine"></span>
+          <span class="btn-text">Get Started</span>
+        </button>
+      </div>
+    </section>
+
     <!-- ========================================================= -->
     <!-- 1. HOMEPAGE / WELCOME SCREEN                              -->
     <!-- ========================================================= -->
-    <section id="home-screen" class="view-screen active">
+    <section id="home-screen" class="view-screen">
       <div class="hero-card">
         <div class="hero-badge">🎧 Interactive Audio Trivia</div>
         <h2 class="hero-title">Listen closely. <span class="gradient-text">Guess what made that sound!</span></h2>
@@ -78,7 +90,7 @@
             <button class="level-card active" data-level="easy">
               <div class="level-header">
                 <span class="level-tag easy-tag">Easy</span>
-                <span class="level-rounds">6 Sounds</span>
+                <span class="level-rounds">10 Sounds</span>
               </div>
               <h4 class="level-name">🟢 Beginner Ear</h4>
               <p class="level-info">Iconic, distinct sounds with broad multiple-choice options. Great for relaxing or playing with kids!</p>
@@ -87,7 +99,7 @@
             <button class="level-card" data-level="medium">
               <div class="level-header">
                 <span class="level-tag medium-tag">Hard</span>
-                <span class="level-rounds">10 Sounds</span>
+                <span class="level-rounds">15 Sounds</span>
               </div>
               <h4 class="level-name">🟡 Sound Detective</h4>
               <p class="level-info">A varied mix of sounds across all 5 categories with clever distractors to challenge your ear.</p>
@@ -96,7 +108,7 @@
             <button class="level-card" data-level="hard">
               <div class="level-header">
                 <span class="level-tag hard-tag">Difficult</span>
-                <span class="level-rounds">15 Sounds</span>
+                <span class="level-rounds">20 Sounds</span>
               </div>
               <h4 class="level-name">🔴 Audio Master</h4>
               <p class="level-info">Subtle, fast, and tricky sounds with closely related answer choices. For true audio wizards!</p>
@@ -105,10 +117,10 @@
             <button class="level-card" data-level="all">
               <div class="level-header">
                 <span class="level-tag marathon-tag">Full Tour</span>
-                <span class="level-rounds">20 Sounds</span>
+                <span class="level-rounds">25 Sounds</span>
               </div>
               <h4 class="level-name">⭐ Grand Marathon</h4>
-              <p class="level-info">Play through all 20 unique sounds in the game! The ultimate hearing championship.</p>
+              <p class="level-info">Play through all 25 unique sounds in the game! The ultimate hearing championship.</p>
             </button>
           </div>
         </div>
@@ -366,6 +378,9 @@
           <button id="btn-play-again" class="cta-btn primary-btn">
             <span>🔄 Play Again</span>
           </button>
+          <button id="btn-continue-next" class="cta-btn secondary-btn hidden" type="button">
+            <span>Continue to Next Level</span>
+          </button>
           <button id="btn-return-home" class="cta-btn secondary-btn">
             <span>🏠 Main Menu</span>
           </button>
@@ -450,10 +465,11 @@
   </div>
 
   <!-- Audio Element Container for HTML5 Audio -->
-  <audio id="audio-player" preload="auto"></audio>
+  <audio id="audio-player" preload="auto" playsinline></audio>
   <audio id="sfx-player" preload="auto"></audio>
 
   <!-- External JavaScript -->
+  <script src="extra_sounds.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

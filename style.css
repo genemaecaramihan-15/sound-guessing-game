@@ -1412,6 +1412,10 @@ kbd {
   gap: 1rem;
 }
 
+.results-actions .hidden {
+  display: none !important;
+}
+
 /* =========================================================
    INSTRUCTIONS MODAL
    ========================================================= */
@@ -1566,7 +1570,13 @@ kbd {
   }
 
   .volume-slider-wrapper {
-    display: none; /* Hide slider on mobile to conserve space, keep mute icon */
+    display: flex;
+    width: 58px;
+  }
+
+  .audio-secondary-bar {
+    flex-wrap: wrap;
+    gap: 0.6rem;
   }
 
   .hero-card {
@@ -1815,6 +1825,10 @@ kbd {
   animation: slideInDown 0.4s ease;
 }
 
+.golden-trophy-card.hidden {
+  display: none !important;
+}
+
 .golden-trophy-star {
   font-size: 2.5rem;
   animation: bounceTrophy 2s infinite;
@@ -1836,5 +1850,201 @@ kbd {
 @keyframes slideInDown {
   from { opacity: 0; transform: translateY(-15px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   HOME SCREEN: compact audio trivia landing page
+   ========================================================= */
+.welcome-card {
+  min-height: min(620px, calc(100vh - 150px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: #191f36;
+  border: 1px solid rgba(148, 163, 184, 0.17);
+  border-radius: 24px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+}
+
+.welcome-card .hero-badge {
+  margin-bottom: 1.15rem;
+}
+
+.welcome-title {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+  margin: 0.85rem 0 2rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.welcome-card .large-btn {
+  min-width: 220px;
+  border-radius: 18px;
+}
+
+#home-screen {
+  max-width: 100%;
+}
+
+.game-wrapper {
+  max-width: 1000px;
+}
+
+.hero-card {
+  background: #191f36;
+  border-color: rgba(148, 163, 184, 0.17);
+  border-radius: 0 0 24px 24px;
+  padding: 1.5rem 2.2rem 1.7rem;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+}
+
+.hero-badge {
+  padding: 0.22rem 1rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.78rem;
+  background: rgba(99, 102, 241, 0.13);
+}
+
+.hero-title {
+  max-width: 820px;
+  margin: 0 auto 0.65rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.08;
+}
+
+.hero-title .gradient-text {
+  display: block;
+}
+
+.hero-desc {
+  max-width: 760px;
+  margin-bottom: 1.15rem;
+  font-size: 0.97rem;
+  line-height: 1.5;
+}
+
+.category-pills-row {
+  gap: 0.55rem;
+  margin-bottom: 1.35rem;
+}
+
+.category-chip {
+  padding: 0.3rem 0.9rem;
+  background: rgba(255, 255, 255, 0.055);
+  font-size: 0.82rem;
+}
+
+.section-block {
+  margin-top: 0.8rem;
+}
+
+.section-heading {
+  margin-bottom: 0.55rem;
+  font-size: 0.98rem;
+}
+
+.level-selection-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.level-card {
+  min-height: 137px;
+  padding: 0.9rem 0.9rem;
+  border-width: 1.5px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.level-card.active {
+  background: rgba(99, 102, 241, 0.17);
+  border-color: #6965ff;
+  box-shadow: 0 0 18px rgba(99, 102, 241, 0.2);
+}
+
+.level-header {
+  margin-bottom: 0.4rem;
+}
+
+.level-tag {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.68rem;
+}
+
+.level-rounds {
+  font-size: 0.74rem;
+}
+
+.level-name {
+  margin-bottom: 0.3rem;
+  font-size: 0.94rem;
+}
+
+.level-info {
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.hero-actions {
+  margin-top: 1.6rem;
+}
+
+.hero-actions .large-btn {
+  min-width: 245px;
+  padding: 0.75rem 2rem;
+  border-radius: 18px;
+  font-size: 1.15rem;
+}
+
+.features-strip {
+  margin-top: 1.8rem;
+  padding-top: 1.15rem;
+}
+
+.feature-icon {
+  font-size: 1.25rem;
+}
+
+.feature-text {
+  font-size: 0.74rem;
+}
+
+@media (max-width: 768px) {
+  .hero-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .level-selection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-card {
+    padding: 1.35rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .level-selection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .level-card {
+    min-height: 120px;
+  }
 }
 

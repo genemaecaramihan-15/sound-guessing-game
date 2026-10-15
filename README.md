@@ -7,17 +7,17 @@ A fun, interactive, and educational web-based audio quiz game built with pure **
 ## 🌟 Game Highlights & Features
 
 - **🎮 Homepage**: Modern glassmorphic hero interface with sound visualizers, difficulty selector, category filter, instructions, and high-score tracking.
-- **🔊 Real Audio Clips**: 20 distinct high-quality sound effects across 5 categories, plus tactile UI sounds (correct chime, buzz, clicks, victory fanfare).
+- **🔊 Real Audio Clips**: 70 unique level sounds across 5 categories, plus tactile UI sounds (correct chime, buzz, clicks, victory fanfare).
 - **🛡️ Dual-Engine Audio Reliability**:
   1. **Direct HTML5 Audio**: Plays 44.1kHz `.wav` audio files stored locally in the `audio/` directory.
   2. **Zero-Fail Web Audio API Procedural Synthesizer**: Built right into `app.js` as an instant fallback, guaranteeing 100% playable sound in every environment (including offline or direct `file:///` browser launches).
 - **✨ Live Audio Visualizer**: Real-time canvas equalizer bars and animated ripple rings that react dynamically during audio playback.
 - **🧠 Educational "Did You Know?" Facts**: Every sound reveals fascinating scientific or historical trivia after answering!
 - **🏆 Comprehensive Scoring & Levels**:
-  - **Easy (Beginner Ear)**: 6 iconic sounds with distinct cross-category choices.
-  - **Medium (Sound Detective)**: 10 sounds with nuanced distractors.
-  - **Hard (Audio Master)**: 15 tricky sounds with closely related distractors.
-  - **Grand Marathon**: All 20 sounds in one hearing championship!
+  - **Easy (Beginner Ear)**: 10 familiar sounds with distinct choices.
+  - **Hard (Sound Detective)**: 15 different sounds with more nuanced distractors.
+  - **Difficult (Audio Master)**: 20 exclusive sounds with closely related distractors.
+  - **Full Tour**: 25 additional sounds in a separate hearing championship.
   - **+10 Points** per correct answer, streak tracking, accuracy percentage, and end-game performance trophies.
 - **💀 Sudden Death Game Over**: Choosing an incorrect answer ends the run immediately with a **Game Over** screen, scoring points for sounds identified prior to the mistake and offering a **Try Again** option.
 - **🎧 Sound History Review**: At the end of the round, inspect every sound you encountered, check your answers, and click a mini **Play** button to listen again!
