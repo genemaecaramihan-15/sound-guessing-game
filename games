@@ -1,0 +1,31 @@
+games/
+├── index.html            # Main HTML layout, HUD, visualizer canvas, modals
+├── style.css             # Responsive styling, gradients, glassmorphism, animations
+├── app.js                # Game engine, procedural Web Audio fallback, keyboard events
+├── generate_sounds.js    # Node.js generator script for creating the WAV audio files
+├── README.md             # Documentation and usage guide
+└── audio/                # 24 playable 44.1kHz WAV sound files
+    ├── dog_bark.wav
+    ├── cat_meow.wav
+    ├── bird_chirp.wav
+    ├── cow_moo.wav
+    ├── car_horn.wav
+    ├── motorcycle.wav
+    ├── airplane.wav
+    ├── train.wav
+    ├── piano.wav
+    ├── guitar.wav
+    ├── drums.wav
+    ├── flute.wav
+    ├── rain.wav
+    ├── thunder.wav
+    ├── ocean_waves.wav
+    ├── wind.wav
+    ├── alarm_clock.wav
+    ├── telephone.wav
+    ├── doorbell.wav
+    ├── water_pouring.wav
+    ├── correct.wav
+    ├── incorrect.wav
+    ├── click.wav
+    └── fanfare.wav

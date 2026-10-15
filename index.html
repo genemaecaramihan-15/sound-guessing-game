@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess the Sound Challenge 🎧</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20y=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>🔊</text></svg>">
+</head>
+<body>
+  <!-- Ambient Audio Waves & Background Glow -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="floating-icons-container" id="floating-icons"></div>
+
+  <!-- Top Global Navigation Bar -->
+  <header class="app-header">
+    <div class="header-logo" id="btn-header-home" role="button" tabindex="0" title="Back to Home">
+      <span class="logo-icon">🔊</span>
+      <div class="logo-text">
+        <h1 class="logo-title">Guess the Sound</h1>
+        <span class="logo-subtitle">Sound Challenge</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- High Score Pill -->
+      <div class="stat-pill" title="Your highest score saved on this browser">
+        <span class="stat-icon">🏆</span>
+        <span class="stat-label">Best:</span>
+        <span class="stat-value" id="header-best-score">0</span>
+      </div>
+
+      <!-- Volume Controls -->
+      <div class="audio-control-group">
+        <button id="btn-mute" class="icon-btn" title="Mute / Unmute Audio (Shortcut: M)" aria-label="Mute toggle">
+          <span id="mute-icon">🔊</span>
+        </button>
+        <div class="volume-slider-wrapper" title="Adjust Volume">
+          <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume slider">
+        </div>
+      </div>
+
+      <!-- Instructions Button -->
+      <button id="btn-open-instructions" class="action-btn secondary-btn" title="View Instructions">
+        <span>❓ How to Play</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="game-wrapper">
+
+    <!-- ========================================================= -->
+    <!-- 1. HOMEPAGE / WELCOME SCREEN                              -->
+    <!-- ========================================================= -->
+    <section id="home-screen" class="view-screen active">
+      <div class="hero-card">
+        <div class="hero-badge">🎧 Interactive Audio Trivia</div>
+        <h2 class="hero-title">Listen closely. <span class="gradient-text">Guess what made that sound!</span></h2>
+        <p class="hero-desc">
+          Put your listening skills to the ultimate test! Play sounds from animals, roaring vehicles, musical instruments, nature storms, and daily life. Can you identify them all?
+        </p>
+
+        <!-- Category Showcase Badges -->
+        <div class="category-pills-row">
+          <span class="category-chip" data-cat="animals">🐶 Animals</span>
+          <span class="category-chip" data-cat="vehicles">🚗 Vehicles</span>
+          <span class="category-chip" data-cat="music">🎵 Musical Instruments</span>
+          <span class="category-chip" data-cat="nature">🌧️ Nature</span>
+          <span class="category-chip" data-cat="everyday">🏠 Everyday Sounds</span>
+        </div>
+
+        <!-- Level Selection Area -->
+        <div class="section-block">
+          <h3 class="section-heading">Select Difficulty Level:</h3>
+          <div class="level-selection-grid">
+            <button class="level-card active" data-level="easy">
+              <div class="level-header">
+                <span class="level-tag easy-tag">Easy</span>
+                <span class="level-rounds">6 Sounds</span>
+              </div>
+              <h4 class="level-name">🟢 Beginner Ear</h4>
+              <p class="level-info">Iconic, distinct sounds with broad multiple-choice options. Great for relaxing or playing with kids!</p>
+            </button>
+
+            <button class="level-card" data-level="medium">
+              <div class="level-header">
+                <span class="level-tag medium-tag">Hard</span>
+                <span class="level-rounds">10 Sounds</span>
+              </div>
+              <h4 class="level-name">🟡 Sound Detective</h4>
+              <p class="level-info">A varied mix of sounds across all 5 categories with clever distractors to challenge your ear.</p>
+            </button>
+
+            <button class="level-card" data-level="hard">
+              <div class="level-header">
+                <span class="level-tag hard-tag">Difficult</span>
+                <span class="level-rounds">15 Sounds</span>
+              </div>
+              <h4 class="level-name">🔴 Audio Master</h4>
+              <p class="level-info">Subtle, fast, and tricky sounds with closely related answer choices. For true audio wizards!</p>
+            </button>
+
+            <button class="level-card" data-level="all">
+              <div class="level-header">
+                <span class="level-tag marathon-tag">Full Tour</span>
+                <span class="level-rounds">20 Sounds</span>
+              </div>
+              <h4 class="level-name">⭐ Grand Marathon</h4>
+              <p class="level-info">Play through all 20 unique sounds in the game! The ultimate hearing championship.</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Launch CTA -->
+        <div class="hero-actions">
+          <button id="btn-start-game" class="cta-btn primary-btn large-btn">
+            <span class="btn-shine"></span>
+            <span class="btn-icon">🎮</span>
+            <span class="btn-text">Start Game</span>
+          </button>
+        </div>
+
+        <!-- Feature Highlights Strip -->
+        <div class="features-strip">
+          <div class="feature-item">
+            <span class="feature-icon">🔊</span>
+            <span class="feature-text">Real Audio Clips</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">✨</span>
+            <span class="feature-text">Live Waveform Visualizer</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">💡</span>
+            <span class="feature-text">Fun Facts Every Round</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📱</span>
+            <span class="feature-text">Mobile & Desktop Friendly</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- 2. ACTIVE GAME SCREEN                                     -->
+    <!-- ========================================================= -->
+    <section id="game-screen" class="view-screen">
+      <!-- Game Status Top Bar -->
+      <div class="game-status-bar">
+        <div class="status-left">
+          <span class="badge" id="hud-level-badge">Easy</span>
+          <span class="hud-category-chip" id="hud-category">🐶 Animals</span>
+        </div>
+
+        <div class="status-center">
+          <div class="progress-container">
+            <div class="progress-label">
+              <span>Question <strong id="hud-current-index">1</strong> of <strong id="hud-total-questions">10</strong></span>
+              <span id="hud-progress-percent">10%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="hud-progress-fill" style="width: 10%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status-right">
+          <div class="shield-pill hidden" id="hud-shield-pill" title="Golden Shield: Protects you from 1 Game Over!">
+            <span class="shield-icon">🛡️</span>
+            <span class="shield-label">Shield:</span>
+            <span class="shield-count" id="hud-shield-count">1</span>
+          </div>
+          <div class="golden-badge-pill hidden" id="hud-golden-badge" title="Exclusive Golden Ear Award">
+            <span>🌟 Golden Ear</span>
+          </div>
+          <div class="score-display">
+            <span class="score-label">Score</span>
+            <span class="score-number" id="hud-score">0</span>
+          </div>
+          <div class="streak-pill" id="hud-streak-pill" title="Consecutive correct answers">
+            <span>🔥</span>
+            <span id="hud-streak-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Sound Box Card -->
+      <div class="sound-stage-card" id="sound-stage-card">
+        <!-- Golden Challenge Announcement Banner -->
+        <div class="golden-alert-banner hidden" id="golden-alert-banner">
+          <div class="golden-banner-badge">✨ SURPRISE EVENT ✨</div>
+          <div class="golden-banner-title">🌟 GOLDEN SOUND CHALLENGE! 🌟</div>
+          <div class="golden-banner-desc">Surprise Round! Identify this sound correctly to win:</div>
+          <div class="golden-rewards-row">
+            <span class="reward-tag">🎁 <strong>+30 Points</strong> (3x Bonus)</span>
+            <span class="reward-tag">🛡️ <strong>Golden Shield</strong> (Extra Life)</span>
+            <span class="reward-tag">🏅 <strong>Golden Ear Badge</strong></span>
+          </div>
+        </div>
+
+        <!-- Visualizer Canvas Display -->
+        <div class="visualizer-wrapper">
+          <canvas id="visualizer-canvas" width="600" height="120"></canvas>
+          <div class="visualizer-overlay" id="visualizer-overlay">
+            <span class="pulse-ring ring-1"></span>
+            <span class="pulse-ring ring-2"></span>
+          </div>
+        </div>
+
+        <!-- Big Center Audio Action Button -->
+        <div class="audio-action-center">
+          <button id="btn-play-sound" class="big-audio-btn" aria-label="Play mystery sound">
+            <div class="audio-btn-glow"></div>
+            <div class="audio-btn-inner">
+              <span class="audio-icon" id="play-button-icon">🔊</span>
+              <span class="audio-btn-label" id="play-button-label">Play Sound</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Audio Auxiliary Controls: Sound Hint -->
+        <div class="audio-secondary-bar">
+          <button id="btn-hint" class="btn-subtle" title="Get a helpful category clue">
+            <span>💡 Clue: <span id="hint-text">Listen closely!</span></span>
+          </button>
+        </div>
+
+        <div class="sound-instructions-notice" id="sound-state-notice">
+          👉 Click <strong>🔊 Play Sound</strong> or press <kbd>Space</kbd> to listen!
+        </div>
+      </div>
+
+      <!-- Multiple Choice 4-Option Grid -->
+      <div class="answers-section">
+        <h3 class="answers-prompt">What sound did you hear?</h3>
+        <div class="answers-grid" id="answers-grid">
+          <button class="answer-btn" data-index="0">
+            <span class="key-shortcut">1</span>
+            <span class="choice-icon">🐶</span>
+            <span class="choice-text">Dog Barking</span>
+          </button>
+          <button class="answer-btn" data-index="1">
+            <span class="key-shortcut">2</span>
+            <span class="choice-icon">🐱</span>
+            <span class="choice-text">Cat Meowing</span>
+          </button>
+          <button class="answer-btn" data-index="2">
+            <span class="key-shortcut">3</span>
+            <span class="choice-icon">🐦</span>
+            <span class="choice-text">Bird Chirping</span>
+          </button>
+          <button class="answer-btn" data-index="3">
+            <span class="key-shortcut">4</span>
+            <span class="choice-icon">🐮</span>
+            <span class="choice-text">Cow Mooing</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Round Feedback & Fun Fact Banner (Appears after answer) -->
+      <div class="feedback-container hidden" id="feedback-panel">
+        <div class="feedback-banner" id="feedback-banner">
+          <div class="feedback-icon" id="feedback-icon">🎉</div>
+          <div class="feedback-body">
+            <h4 class="feedback-heading" id="feedback-title">Correct Answer!</h4>
+            <p class="feedback-detail" id="feedback-detail">+10 Points awarded!</p>
+          </div>
+        </div>
+
+        <!-- Educational Fun Fact Card -->
+        <div class="fun-fact-card">
+          <div class="fact-header">
+            <span class="fact-tag">🧠 Did You Know?</span>
+            <span class="fact-sound-title" id="fact-sound-title">Sound Trivia</span>
+          </div>
+          <p class="fact-content" id="fact-content">
+            Dogs have an incredible hearing range, hearing sounds between 40 Hz and 60,000 Hz!
+          </p>
+        </div>
+
+        <!-- Next Sound Action -->
+        <div class="feedback-actions">
+          <button id="btn-next-sound" class="cta-btn primary-btn pulse-next">
+            <span>Next Sound</span>
+            <span class="btn-arrow">➡️</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- 3. GAME RESULTS SCREEN                                    -->
+    <!-- ========================================================= -->
+    <section id="results-screen" class="view-screen">
+      <canvas id="confetti-canvas"></canvas>
+
+      <div class="results-card">
+        <div class="results-trophy-wrapper">
+          <span class="trophy-emoji" id="results-trophy">🏆</span>
+          <div class="results-badge" id="results-grade">Master Listener</div>
+        </div>
+
+        <h2 class="results-title" id="results-title">Challenge Completed!</h2>
+        <p class="results-message" id="results-message">Outstanding job! You identified almost every sound accurately.</p>
+
+        <!-- Main Score Counter -->
+        <div class="results-score-box">
+          <span class="score-box-label">Final Score</span>
+          <div class="score-box-val">
+            <span id="results-score">80</span>
+            <span class="score-box-max" id="results-max-score">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Golden Sound Challenge Showcase Card -->
+        <div class="golden-trophy-card hidden" id="results-golden-card">
+          <div class="golden-trophy-star">🌟</div>
+          <div class="golden-trophy-text">
+            <h4 class="golden-trophy-title">Golden Ear Champion!</h4>
+            <p class="golden-trophy-desc">You conquered the surprise Golden Sound Challenge and earned the exclusive Golden Ear Badge!</p>
+          </div>
+        </div>
+
+        <!-- Detailed Performance Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-icon">🎯</span>
+            <span class="metric-value" id="results-accuracy">80%</span>
+            <span class="metric-label">Accuracy</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon">✅</span>
+            <span class="metric-value"><strong id="results-correct-count">8</strong>/<span id="results-total-count">10</span></span>
+            <span class="metric-label">Correct</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon">🔥</span>
+            <span class="metric-value" id="results-best-streak">5</span>
+            <span class="metric-label">Best Streak</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-icon">⏱️</span>
+            <span class="metric-value" id="results-time">1m 15s</span>
+            <span class="metric-label">Time</span>
+          </div>
+        </div>
+
+        <!-- Sound Review Accordion / History -->
+        <div class="review-section">
+          <button id="btn-toggle-review" class="review-toggle-btn">
+            <span>🎧 Review Sounds You Listened To (<span id="review-count">10</span>)</span>
+            <span id="review-chevron">▼</span>
+          </button>
+          <div class="review-list hidden" id="review-list">
+            <!-- Dynamically populated review items -->
+          </div>
+        </div>
+
+        <!-- End-Game Actions -->
+        <div class="results-actions">
+          <button id="btn-play-again" class="cta-btn primary-btn">
+            <span>🔄 Play Again</span>
+          </button>
+          <button id="btn-return-home" class="cta-btn secondary-btn">
+            <span>🏠 Main Menu</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================= -->
+  <!-- INSTRUCTIONS MODAL                                        -->
+  <!-- ========================================================= -->
+  <div class="modal-overlay hidden" id="instructions-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">🎧</span>
+          <h3 class="modal-title">How to Play Guess the Sound</h3>
+        </div>
+        <button id="btn-close-modal" class="modal-close-btn" aria-label="Close instructions">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="instruction-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>🔊 Listen Carefully</h4>
+            <p>Click the large <strong>Play Sound</strong> button or press <kbd>Space</kbd> to hear the mystery audio clip. Listen closely before making your choice!</p>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>🤔 Pick the Correct Answer</h4>
+            <p>Choose from the 4 options shown on screen. Only one is correct! You can click or press number keys <kbd>1</kbd> to <kbd>4</kbd>.</p>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>🌟 Earn Points & Learn</h4>
+            <p>Score <strong>10 points</strong> for every correct answer. Read fascinating educational facts about what produces each sound!</p>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>💀 Beware of Game Over!</h4>
+            <p>Listen closely before choosing! If you choose an <strong>incorrect answer</strong>, it's <strong>Game Over</strong> immediately. Try to maintain the longest streak!</p>
+          </div>
+        </div>
+
+        <div class="instruction-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>🌟 Surprise Golden Sound Challenge!</h4>
+            <p>A surprise Golden Sound appears randomly during the game! Guessing correctly awards <strong>+30 Bonus Points</strong>, an <strong>🛡️ Extra Life Shield</strong> (saves you from 1 Game Over!), and the <strong>🌟 Golden Ear Badge</strong>!</p>
+          </div>
+        </div>
+
+        <div class="shortcuts-box">
+          <div class="shortcuts-title">⌨️ Keyboard Shortcuts</div>
+          <div class="shortcuts-grid">
+            <div><kbd>Space</kbd> Play Sound</div>
+            <div><kbd>1</kbd> - <kbd>4</kbd> Choose Options</div>
+            <div><kbd>Enter</kbd> / <kbd>N</kbd> Next Sound</div>
+            <div><kbd>M</kbd> Mute / Unmute</div>
+            <div><kbd>Esc</kbd> Close Modal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btn-modal-got-it" class="cta-btn primary-btn">
+          <span>Let's Play! 🚀</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Element Container for HTML5 Audio -->
+  <audio id="audio-player" preload="auto"></audio>
+  <audio id="sfx-player" preload="auto"></audio>
+
+  <!-- External JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
+
